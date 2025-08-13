@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>欢迎回家</title>
+    <!-- 引入样式库 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置温暖风格颜色 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        warm: {
+                            50: '#fffbf5',
+                            100: '#fff4e6',
+                            200: '#ffe8cc',
+                            300: '#ffd8a8',
+                            400: '#ffc078',
+                            500: '#ffa94d',
+                            600: '#fd7e14',
+                            700: '#e67e22',
+                            800: '#d35400',
+                            900: '#c0392b'
+                        }
+                    },
+                    fontFamily: {
+                        rounded: ['"Comic Sans MS"', '"Marker Felt"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- 自定义样式 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow-sm {
+                text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            }
+            .bg-blur {
+                backdrop-filter: blur(10px);
+            }
+            .card-hover {
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+        }
+    </style>
+    
+    <style>
+        body {
+            transition: background-image 1.5s ease-in-out;
+            min-height: 100vh;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="font-rounded">
+    <!-- 主容器 -->
+    <div class="container mx-auto px-4 py-8 max-w-md">
+        <!-- 主卡片 -->
+        <div class="bg-white/90 bg-blur rounded-3xl shadow-2xl p-6 md:p-8 mb-6 fade-in">
+            <!-- 顶部问候语 -->
+            <div id="greeting" class="text-center text-2xl md:text-3xl font-bold text-warm-700 mb-4 pulse"></div>
+            
+            <!-- 日期时间显示 -->
+            <div class="text-center mb-6">
+                <div id="date" class="text-lg text-gray-600"></div>
+                <div id="time" class="text-xl text-warm-600 font-semibold"></div>
+            </div>
+            
+            <!-- 出门/回家时间记录 -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-warm-50 rounded-xl p-4 border border-warm-100 card-hover">
+                    <h3 class="text-warm-600 font-bold mb-2 text-center flex items-center justify-center">
+                        <i class="fa fa-sign-out mr-2"></i>出门时间
+                    </h3>
+                    <div id="leave-time" class="text-center text-gray-700">未记录</div>
+                    <button onclick="recordLeaveTime()" class="mt-2 w-full bg-warm-100 hover:bg-warm-200 text-warm-800 rounded-lg py-1 text-sm transition-colors">
+                        记录出门
+                    </button>
+                </div>
+                
+                <div class="bg-warm-50 rounded-xl p-4 border border-warm-100 card-hover">
+                    <h3 class="text-warm-600 font-bold mb-2 text-center flex items-center justify-center">
+                        <i class="fa fa-sign-in mr-2"></i>回家时间
+                    </h3>
+                    <div id="return-time" class="text-center text-gray-700">未记录</div>
+                    <button onclick="recordReturnTime()" class="mt-2 w-full bg-warm-100 hover:bg-warm-200 text-warm-800 rounded-lg py-1 text-sm transition-colors">
+                        记录回家
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 时长统计 -->
+            <div id="duration" class="bg-warm-50/50 rounded-xl p-4 mb-6 text-center text-gray-700">
+                <p>今日在外时长: <span id="duration-text" class="font-semibold text-warm-700">未记录</span></p>
+            </div>
+            
+            <!-- 节日/节气祝福 -->
+            <div id="festival" class="text-center text-lg text-warm-600 font-medium mb-6 py-2 border-y border-warm-100"></div>
+            
+            <!-- 治愈文案 -->
+            <div id="message" class="text-center text-gray-600 bg-warm-50 rounded-xl p-4 italic leading-relaxed">
+                每天给自己一个微笑，生活就会多一份美好
+            </div>
+        </div>
+        
+        <!-- 页脚 -->
+        <div class="text-center text-gray-500 text-sm bg-white/70 bg-blur rounded-lg p-3 fade-in" style="animation-delay: 0.3s">
+            <p>愿你每天都有好心情 🌸</p>
+        </div>
+    </div>
+
+    <script>
+        // 温暖风格背景图 - 适合地垫用户的温馨氛围
+        const backgrounds = [
+            'https://picsum.photos/id/1059/1200/800', // 向日葵花田
+            'https://picsum.photos/id/1060/1200/800', // 阳光海滩
+            'https://picsum.photos/id/1063/1200/800', // 宁静湖畔
+            'https://picsum.photos/id/1066/1200/800', // 田园风光
+            'https://picsum.photos/id/1076/1200/800', // 阳光花束
+            'https://picsum.photos/id/1080/1200/800', // 逆光森林
+            'https://picsum.photos/id/1082/1200/800', // 阳光草坪
+            'https://picsum.photos/id/110/1200/800',  // 温馨室内
+            'https://picsum.photos/id/240/1200/800',  // 舒适沙发
+            'https://picsum.photos/id/430/1200/800'   // 温暖咖啡
+        ];
+        
+        // 治愈系文案 - 30条不同的好心情语录
+        const messages = [
+            "回家的那一刻，所有疲惫都烟消云散了",
+            "今天也辛苦啦，好好休息一下吧",
+            "家是最温暖的港湾，欢迎回来",
+            "放下所有烦恼，享受此刻的宁静",
+            "今天的你也很棒，给自己点个赞",
+            "生活再忙，也要记得给自己留白",
+            "每一个平凡的日子，都值得温柔以待",
+            "累了就歇一歇，明天又是新的开始",
+            "家里的灯光，永远为你亮着",
+            "小小的幸福，藏在回家的每一步里",
+            "今天也要给自己一个微笑呀",
+            "愿你被生活温柔以待，每一天都开心",
+            "生活或许有不易，但总有温暖在等你",
+            "进门先深呼吸，把烦恼关在门外",
+            "不管今天发生了什么，家永远是你的依靠",
+            "好好爱自己，从享受回家的时光开始",
+            "今天的努力，都是为了更好的生活",
+            "放慢脚步，感受生活中的小确幸",
+            "你值得所有美好的事物，包括此刻的宁静",
+            "家，是无论何时都会接纳你的地方",
+            "给自己充充电，明天继续闪闪发光",
+            "生活再忙，也要记得抬头看看月亮",
+            "今天的不开心就到此为止吧",
+            "愿你每天都有新的期待和惊喜",
+            "回家的感觉，就是这么踏实又温暖",
+            "再难的日子，也有值得微笑的瞬间",
+            "你比自己想象中更强大，更优秀",
+            "享受这份宁静，明天又是元气满满的一天",
+            "家的温度，就是幸福的温度",
+            "今天也谢谢你，努力生活的自己"
+        ];
+        
+        // 节日祝福
+        const festivals = {
+            "1-1": "元旦快乐，新的一年万事顺遂",
+            "2-14": "情人节快乐，愿爱与被爱同时发生",
+            "3-8": "女神节快乐，你值得世间所有美好",
+            "4-5": "清明安康，珍惜当下每一刻",
+            "5-1": "劳动节快乐，辛苦啦，好好休息",
+            "6-1": "儿童节快乐，愿你永葆童心",
+            "6-22": "端午安康，愿平安顺遂",
+            "8-15": "中秋快乐，阖家团圆",
+            "10-1": "国庆快乐，祝福祖国繁荣昌盛",
+            "9-10": "教师节快乐，感恩师恩",
+            "12-25": "圣诞快乐，愿温暖常伴"
+        };
+        
+        // 农历节日
+        const lunarFestivals = {
+            "1-1": "春节快乐，阖家幸福安康",
+            "1-15": "元宵快乐，月圆人圆事事圆",
+            "5-5": "端午安康，平安顺遂",
+            "8-15": "中秋快乐，花好月圆人团圆",
+            "9-9": "重阳安康，福寿绵长"
+        };
+        
+        // 节气
+        const solarTerms = [
+            { date: "2-4", name: "立春", msg: "立春啦，万物复苏，充满希望" },
+            { date: "2-19", name: "雨水", msg: "雨水至，春雨润物，生机盎然" },
+            { date: "3-6", name: "惊蛰", msg: "惊蛰到，春雷始鸣，万物生长" },
+            { date: "3-21", name: "春分", msg: "春分至，昼夜均分，暖意渐浓" },
+            { date: "4-5", name: "清明", msg: "清明时节，缅怀先人，珍惜当下" },
+            { date: "4-20", name: "谷雨", msg: "谷雨至，雨生百谷，播种希望" },
+            { date: "5-6", name: "立夏", msg: "立夏啦，夏日初至，万物繁茂" },
+            { date: "5-21", name: "小满", msg: "小满到，麦粒渐满，收获可期" },
+            { date: "6-6", name: "芒种", msg: "芒种至，忙着耕种，不负时光" },
+            { date: "6-21", name: "夏至", msg: "夏至到，白昼最长，愿你向阳而生" },
+            { date: "7-7", name: "小暑", msg: "小暑至，注意防暑，保持好心情" },
+            { date: "7-23", name: "大暑", msg: "大暑到，愿你清凉一夏，平安度暑" },
+            { date: "8-8", name: "立秋", msg: "立秋啦，秋意渐起，暑去凉来" },
+            { date: "8-23", name: "处暑", msg: "处暑至，暑气消散，秋高气爽" },
+            { date: "9-8", name: "白露", msg: "白露到，早晚添衣，注意保暖" },
+            { date: "9-23", name: "秋分", msg: "秋分至，昼夜均分，收获满满" },
+            { date: "10-8", name: "寒露", msg: "寒露到，寒意渐生，记得添衣" },
+            { date: "10-24", name: "霜降", msg: "霜降至，愿你被温暖包围" },
+            { date: "11-8", name: "立冬", msg: "立冬啦，愿你温暖过冬" },
+            { date: "11-22", name: "小雪", msg: "小雪到，注意保暖，平安过冬" },
+            { date: "12-7", name: "大雪", msg: "大雪至，愿你心中有暖阳" },
+            { date: "12-22", name: "冬至", msg: "冬至到，白昼渐长，暖意渐生" }
+        ];
+        
+        // 农历转换工具
+        class Lunar {
+            static getLunarDate(date) {
+                // 简化版农历转换，实际项目中可使用更精确的算法
+                const year = date.getFullYear();
+                const month = date.getMonth() + 1;
+                const day = date.getDate();
+                
+                // 这里使用模拟数据，实际应用中应替换为精确的农历转换
+                const lunarMonths = ["正", "二", "三", "四", "五", "六", "七", "八", "九", "十", "冬", "腊"];
+                const lunarDays = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", 
+                                  "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", 
+                                  "二十", "廿一", "廿二", "廿三", "廿四", "廿五", "廿六", "廿七", "廿八", "廿九", "三十"];
+                
+                // 简单模拟，实际应用需使用精确算法
+                return {
+                    month: Math.floor(Math.random() * 12) + 1,
+                    day: Math.floor(Math.random() * 29) + 1,
+                    monthName: lunarMonths[Math.floor(Math.random() * 12)],
+                    dayName: lunarDays[Math.floor(Math.random() * 29)]
+                };
+            }
+        }
+        
+        // 记录出门时间
+        function recordLeaveTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('leave-time').textContent = timeStr;
+            
+            // 存储到本地
+            localStorage.setItem('leaveTime', now.getTime());
+            localStorage.setItem('leaveTimeStr', timeStr);
+            
+            // 更新时长
+            updateDuration();
+            
+            // 显示提示
+            showToast('出门时间已记录');
+        }
+        
+        // 记录回家时间
+        function recordReturnTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('return-time').textContent = timeStr;
+            
+            // 存储到本地
+            localStorage.setItem('returnTime', now.getTime());
+            localStorage.setItem('returnTimeStr', timeStr);
+            
+            // 更新时长
+            updateDuration();
+            
+            // 显示提示
+            showToast('欢迎回家～');
+        }
+        
+        // 更新在外时长
+        function updateDuration() {
+            const leaveTime = localStorage.getItem('leaveTime');
+            const returnTime = localStorage.getItem('returnTime');
+            
+            if (leaveTime && returnTime) {
+                const durationMs = parseInt(returnTime) - parseInt(leaveTime);
+                const hours = Math.floor(durationMs / (1000 * 60 * 60));
+                const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+                
+                document.getElementById('duration-text').textContent = 
+                    `${hours}小时${minutes}分钟`;
+            } else if (leaveTime) {
+                document.getElementById('duration-text').textContent = '尚未回家';
+            }
+        }
+        
+        // 显示提示消息
+        function showToast(message) {
+            // 创建toast元素
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-warm-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 fade-in';
+            toast.textContent = message;
+            
+            // 添加到页面
+            document.body.appendChild(toast);
+            
+            // 3秒后移除
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+        
+        // 获取时间段问候语
+        function getGreeting() {
+            const hour = new Date().getHours();
+            
+            if (hour >= 6 && hour < 12) {
+                return "今天也要开心哦！";
+            } else if (hour >= 12 && hour < 18) {
+                return "下午好，加油呀！";
+            } else {
+                return "欢迎回家，好好休息～";
+            }
+        }
+        
+        // 检查节日
+        function checkFestival() {
+            const now = new Date();
+            const month = now.getMonth() + 1;
+            const day = now.getDate();
+            const dateStr = `${month}-${day}`;
+            
+            // 检查公历节日
+            if (festivals[dateStr]) {
+                return festivals[dateStr];
+            }
+            
+            // 检查节气
+            for (const term of solarTerms) {
+                if (term.date === dateStr) {
+                    return term.msg;
+                }
+            }
+            
+            // 检查农历节日（简化版）
+            const lunar = Lunar.getLunarDate(now);
+            const lunarDateStr = `${lunar.month}-${lunar.day}`;
+            if (lunarFestivals[lunarDateStr]) {
+                return lunarFestivals[lunarDateStr];
+            }
+            
+            // 平日问候
+            const weekday = now.getDay();
+            const weekdays = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+            return `今天是${weekdays[weekday]}，愿你心情愉悦`;
+        }
+        
+        // 更新时间显示
+        function updateTime() {
+            const now = new Date();
+            
+            // 更新日期
+            const dateOptions = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            document.getElementById('date').textContent = now.toLocaleDateString('zh-CN', dateOptions);
+            
+            // 更新时间
+            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('time').textContent = now.toLocaleTimeString('zh-CN', timeOptions);
+            
+            // 更新问候语（每小时更新一次）
+            if (now.getMinutes() === 0 && now.getSeconds() === 0) {
+                document.getElementById('greeting').textContent = getGreeting();
+            }
+        }
+        
+        // 初始化页面
+        function init() {
+            // 设置随机背景
+            const randomBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+            document.body.style.backgroundImage = `url(${randomBg})`;
+            
+            // 设置随机治愈文案
+            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+            document.getElementById('message').textContent = randomMsg;
+            
+            // 设置问候语
+            document.getElementById('greeting').textContent = getGreeting();
+            
+            // 设置节日祝福
+            document.getElementById('festival').textContent = checkFestival();
+            
+            // 加载保存的时间记录
+            const leaveTimeStr = localStorage.getItem('leaveTimeStr');
+            const returnTimeStr = localStorage.getItem('returnTimeStr');
+            
+            if (leaveTimeStr) {
+                document.getElementById('leave-time').textContent = leaveTimeStr;
+            }
+            
+            if (returnTimeStr) {
+                document.getElementById('return-time').textContent = returnTimeStr;
+            }
+            
+            // 更新时长
+            updateDuration();
+            
+            // 初始化时间显示
+            updateTime();
+            setInterval(updateTime, 1000);
+            
+            // 每天凌晨清除当天记录
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(now.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            const timeToMidnight = tomorrow - now;
+            
+            setTimeout(() => {
+                localStorage.removeItem('leaveTime');
+                localStorage.removeItem('leaveTimeStr');
+                localStorage.removeItem('returnTime');
+                localStorage.removeItem('returnTimeStr');
+                
+                document.getElementById('leave-time').textContent = '未记录';
+                document.getElementById('return-time').textContent = '未记录';
+                document.getElementById('duration-text').textContent = '未记录';
+                
+                // 刷新页面内容
+                init();
+            }, timeToMidnight);
+        }
+        
+        // 页面加载完成后初始化
+        window.onload = init;
+    </script>
+</body>
+</html>
