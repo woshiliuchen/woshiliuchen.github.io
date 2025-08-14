@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今天，你又纠结了吗？让我来为你做决定吧！</title>
+    <!-- 引入外部资源 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色和字体 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        fun: {
+                            pink: '#ff6b8b',
+                            blue: '#6bb1ff',
+                            yellow: '#ffd166',
+                            green: '#6bff99',
+                            purple: '#c28fff'
+                        }
+                    },
+                    fontFamily: {
+                        comic: ['"Comic Sans MS"', '"Marker Felt"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .bg-blur {
+                backdrop-filter: blur(8px);
+            }
+            .float {
+                animation: float 3s ease-in-out infinite;
+            }
+            .pulse-slow {
+                animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+        }
+    </style>
+    
+    <!-- 核心样式 -->
+    <style>
+        body {
+            transition: background-image 1.5s ease-in-out;
+            min-height: 100vh;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        
+        .module-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .loading-text {
+            display: inline-block;
+            overflow: hidden;
+            animation: typing 2s steps(20, end) infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        .formula {
+            position: absolute;
+            font-family: 'Times New Roman', serif;
+            opacity: 0.7;
+            animation: float 4s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="font-comic">
+    <!-- 页面标题 -->
+    <header class="py-6 text-center">
+        <h1 class="text-3xl md:text-4xl font-bold text-white text-shadow pulse-slow">
+            今天，你又纠结了吗？
+            <span class="block text-xl md:text-2xl mt-2">让我来为你做决定吧！</span>
+        </h1>
+    </header>
+
+    <!-- 主内容区 - 改为上下布局 -->
+    <main class="container mx-auto px-4 py-6 max-w-2xl">
+        <div class="flex flex-col gap-6">
+            <!-- 第一个模块：快速决策（上） -->
+            <div class="module-card bg-white/90 bg-blur rounded-2xl shadow-xl p-6 md:p-8">
+                <div class="text-center mb-6">
+                    <i class="fa fa-lightbulb-o text-fun-yellow text-4xl mb-2 float"></i>
+                    <h2 class="text-2xl font-bold text-fun-blue">快速决策助手</h2>
+                    <p class="text-gray-600 mt-1">纠结星人的救星来啦！</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <textarea 
+                        id="decision-question" 
+                        class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-fun-blue focus:border-transparent transition-all resize-none"
+                        rows="3" 
+                        placeholder="输入你的纠结问题吧～ 比如：今天要不要吃火锅？"></textarea>
+                    
+                    <button 
+                        onclick="makeDecision()" 
+                        class="w-full bg-fun-blue hover:bg-fun-blue/80 text-white font-bold py-3 px-4 rounded-xl transition-colors flex items-center justify-center">
+                        <i class="fa fa-magic mr-2"></i> 帮我做决定！
+                    </button>
+                    
+                    <div id="decision-result" class="min-h-[100px] bg-fun-blue/5 rounded-xl p-4 flex items-center justify-center text-center">
+                        <p class="text-gray-500">你的答案将在这里出现～</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 第二个模块：算命游戏（下） -->
+            <div class="module-card bg-white/90 bg-blur rounded-2xl shadow-xl p-6 md:p-8">
+                <div class="text-center mb-6">
+                    <i class="fa fa-star text-fun-purple text-4xl mb-2 float"></i>
+                    <h2 class="text-2xl font-bold text-fun-pink">大师算命馆</h2>
+                    <p class="text-gray-600 mt-1">算算今日运势如何～</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <textarea 
+                        id="fortune-question" 
+                        class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-fun-pink focus:border-transparent transition-all resize-none"
+                        rows="3" 
+                        placeholder="输入想算的问题～ 比如：今天要不要出门？"></textarea>
+                    
+                    <button 
+                        onclick="startFortuneTelling()" 
+                        class="w-full bg-fun-pink hover:bg-fun-pink/80 text-white font-bold py-3 px-4 rounded-xl transition-colors flex items-center justify-center">
+                        <i class="fa fa-moon-o mr-2"></i> 开始测算！
+                    </button>
+                    
+                    <!-- 算命结果区域 -->
+                    <div id="fortune-container" class="min-h-[100px] bg-fun-pink/5 rounded-xl p-4 flex items-center justify-center text-center">
+                        <p class="text-gray-500">测算结果将在这里出现～</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- 页脚 -->
+    <footer class="mt-8 py-4 text-center text-white text-shadow">
+        <p>今日纠结指数：<span id="confusion-level">0%</span> | 开心指数：<span id="happy-level">100%</span></p>
+    </footer>
+
+    <script>
+        // 背景图片库 - 轻松有趣的风格
+        const backgrounds = [
+            'https://picsum.photos/id/1047/1920/1080', // 可爱云朵
+            'https://picsum.photos/id/1059/1920/1080', // 向日葵花田
+            'https://picsum.photos/id/177/1920/1080',  // 彩色墙面
+            'https://picsum.photos/id/237/1920/1080',  // 可爱小狗
+            'https://picsum.photos/id/96/1920/1080',   // 彩虹天空
+            'https://picsum.photos/id/110/1920/1080',  // 温馨室内
+            'https://picsum.photos/id/155/1920/1080',  // 卡通风格
+            'https://picsum.photos/id/325/1920/1080'   // 趣味插画
+        ];
+        
+        // 决策回答库 - 风趣幽默的回答
+        const decisionAnswers = [
+            "当然要！人生苦短，及时行乐～",
+            "听我的，别犹豫，就这么定了！",
+            "我觉得不太合适，再等等看～",
+            "必须安排！这事儿值得一做～",
+            "建议放弃，你的钱包在偷偷哭泣～",
+            "冲鸭！再不做就没机会了～",
+            "三思而后行，今天不太适合哦～",
+            "听我的准没错，就这么办！",
+            "别纠结了，答案是肯定的！",
+            "冷静点，今天适合躺平休息～",
+            "必须的！这事儿能让你开心～",
+            "我掐指一算，今天不宜进行～",
+            "大胆去做吧，我看好你！",
+            "收手吧，外面全是坑～",
+            "选这个！你的直觉很准～",
+            "换个选项吧，这个不太妙～",
+            "别想了，直接去做就对了！",
+            "今天适合佛系一点，随它去吧～",
+            "相信我，这是个好主意！",
+            "放弃吧，这事儿性价比不高～"
+        ];
+        
+        // 算命结果库 - 趣味运势结论
+        const fortuneResults = [
+            "今日运势爆棚，大胆去做吧！",
+            "运势欠佳，建议在家躺平充电～",
+            "大吉大利！今天做什么都顺利～",
+            "小凶预警，重要事建议明天再办～",
+            "财运亨通！出门记得带钱包～",
+            "桃花朵朵开，今天适合社交哦～",
+            "宜静不宜动，在家看书最舒服～",
+            "贵人运加持，遇到困难会有人帮～",
+            "今日不宜做重大决定，再等等～",
+            "幸运值max！买张彩票试试手气～",
+            "气场强大，今天适合谈判协商～",
+            "精力不足，建议早点休息养精神～",
+            "逢凶化吉，再难的事都能解决～",
+            "适合学习新知识，效率超高～",
+            "今日犯懒癌，怎么舒服怎么来～",
+            "好运连连，做什么都顺风顺水～",
+            "小心破财，今天别乱花钱哦～",
+            "灵感爆发，适合创意类工作～",
+            "适合出门走走，会有小惊喜～",
+            "今日宜宅家，享受独处时光～"
+        ];
+        
+        // 随机切换背景图
+        function setRandomBackground() {
+            const randomIndex = Math.floor(Math.random() * backgrounds.length);
+            document.body.style.backgroundImage = `url(${backgrounds[randomIndex]})`;
+        }
+        
+        // 快速决策功能
+        function makeDecision() {
+            const questionInput = document.getElementById('decision-question');
+            const resultDiv = document.getElementById('decision-result');
+            const question = questionInput.value.trim();
+            
+            if (!question) {
+                resultDiv.innerHTML = '<p class="text-red-500">请先输入你的问题呀～</p>';
+                return;
+            }
+            
+            // 随机选择回答
+            const randomIndex = Math.floor(Math.random() * decisionAnswers.length);
+            const answer = decisionAnswers[randomIndex];
+            
+            // 显示结果动画
+            resultDiv.innerHTML = '<p class="text-gray-700 opacity-0 transition-opacity duration-500">思考中...</p>';
+            setTimeout(() => {
+                resultDiv.innerHTML = `<p class="text-gray-800 text-lg">${answer}</p>`;
+                // 更新纠结指数
+                updateConfusionLevel();
+            }, 800);
+            
+            // 清空输入框
+            questionInput.value = '';
+        }
+        
+        // 算命游戏功能
+        function startFortuneTelling() {
+            const questionInput = document.getElementById('fortune-question');
+            const resultContainer = document.getElementById('fortune-container');
+            const question = questionInput.value.trim();
+            
+            if (!question) {
+                resultContainer.innerHTML = '<p class="text-red-500">请先输入想算的问题呀～</p>';
+                return;
+            }
+            
+            // 显示加载动画
+            resultContainer.innerHTML = `
+                <div class="text-center">
+                    <p class="text-gray-600 mb-2">大师正在掐指测算</p>
+                    <p class="loading-text text-fun-purple">🧮 天机正在解密中...</p>
+                    <div id="formulas-container" class="h-16 relative mt-2 overflow-hidden"></div>
+                </div>
+            `;
+            
+            // 生成随机公式动画
+            createFormulaAnimation();
+            
+            // 3秒后显示结果
+            setTimeout(() => {
+                const randomIndex = Math.floor(Math.random() * fortuneResults.length);
+                const result = fortuneResults[randomIndex];
+                
+                resultContainer.innerHTML = `
+                    <div class="text-center">
+                        <p class="text-fun-purple font-bold mb-2">测算结果</p>
+                        <p class="text-gray-800 text-lg">${result}</p>
+                    </div>
+                `;
+                // 更新开心指数
+                updateHappyLevel();
+            }, 3000);
+            
+            // 清空输入框
+            questionInput.value = '';
+        }
+        
+        // 创建算命时的公式动画
+        function createFormulaAnimation() {
+            const container = document.getElementById('formulas-container');
+            const formulas = ['∂/∂x', '∑∏', '√∞', 'e^iπ', 'φ=1.618', '∫∬∭', '∞+1', '√-1', '∇∆'];
+            
+            // 生成多个随机公式
+            for (let i = 0; i < 8; i++) {
+                const formula = document.createElement('div');
+                formula.className = 'formula';
+                formula.textContent = formulas[Math.floor(Math.random() * formulas.length)];
+                formula.style.left = `${Math.random() * 100}%`;
+                formula.style.top = `${Math.random() * 100}%`;
+                formula.style.fontSize = `${12 + Math.random() * 16}px`;
+                formula.style.color = `rgb(${Math.random() * 100 + 50}, ${Math.random() * 50}, ${Math.random() * 150 + 100})`;
+                formula.style.animationDelay = `${Math.random() * 2}s`;
+                container.appendChild(formula);
+            }
+        }
+        
+        // 更新纠结指数
+        function updateConfusionLevel() {
+            const confusionLevel = document.getElementById('confusion-level');
+            const newLevel = Math.floor(Math.random() * 30) + '%';
+            confusionLevel.textContent = newLevel;
+        }
+        
+        // 更新开心指数
+        function updateHappyLevel() {
+            const happyLevel = document.getElementById('happy-level');
+            const newLevel = Math.floor(Math.random() * 30) + 70 + '%';
+            happyLevel.textContent = newLevel;
+        }
+        
+        // 初始化页面
+        function init() {
+            setRandomBackground();
+            // 每30分钟换一次背景
+            setInterval(setRandomBackground, 30 * 60 * 1000);
+        }
+        
+        // 页面加载完成后初始化
+        window.onload = init;
+    </script>
+</body>
+</html>
